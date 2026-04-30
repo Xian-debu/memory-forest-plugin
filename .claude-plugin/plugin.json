@@ -1,0 +1,10 @@
+{
+  "name": "memory-forest",
+  "version": "1.0.0",
+  "description": "记忆森林 (Memory Forest) — 一套完整的 AI 行为配置与记忆管理系统，为 Claude 提供分层记忆、行为准则和会话生命周期管理",
+  "author": {
+    "name": "Xian-debu"
+  },
+  "license": "MIT",
+  "keywords": ["memory", "behavior", "configuration", "session-management", "chinese"]
+}
