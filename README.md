@@ -53,6 +53,35 @@ claude plugin install memory-forest
 | L3 跨项目 | 季度审查 | 可跨项目迁移的模式 |
 | L4 核心 | 年度审查 | 高度凝练的指导原则（≤20 条） |
 
+## v1.1.0 新增：自动化引擎 + MCP Server + CLI 工具
+
+### CLI 工具 (mf)
+
+```bash
+mf status       # 森林状态总览
+mf health       # 健康检查
+mf heartbeat    # 心跳所有活跃节点
+mf gc           # 垃圾回收候选
+mf search <kw>  # 全文搜索
+mf list [tree]  # 列出节点
+mf show <id>    # 查看节点
+mf create ...   # 创建节点
+```
+
+### MCP Server
+
+8 个 MCP 工具暴露给所有兼容 agent，配置在 `settings.local.json`：
+`memory_status`, `memory_health`, `memory_search`, `memory_read`, `memory_heartbeat`, `memory_gc_check`, `memory_list`, `memory_create`
+
+### 自动化 Hooks
+
+- **Stop Hook** — 会话退出自动心跳所有活跃节点 + GC 扫描
+- **SessionStart Hook** — 会话启动自动健康检查 + GC 提醒
+
+### Shell 别名
+
+`mf`/`mfs`/`mfh` (记忆操作) · `dexec`/`dcp` (Docker) · `cc`/`ccc`/`ccp` (Claude CLI)
+
 ## 更新
 
 ```bash

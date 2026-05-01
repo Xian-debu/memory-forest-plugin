@@ -103,15 +103,23 @@ mkdir -p ~/.claude/projects/-root/memory/{system-tree,experiences-tree/{core,pat
 
 每次会话启动时（检测到森林已存在）：
 
+### 自动化机制
+
+- **SessionStart Hook**: `python3 /root/.claude/scripts/startup_hook.py` 在每次会话启动时自动执行健康检查
+- **Stop Hook**: `python3 /root/.claude/scripts/heartbeat_hook.py` 在每次会话结束时自动执行心跳冒泡 + GC 检查
+- **CLI 工具**: `python3 /root/.claude/scripts/mf.py {status,heartbeat,gc,search,health,create,list,show}` 手动操作记忆
+
 ### 启动序列（≤ 3秒完成）
 
 ```
 1. load("forest-root.md")                          # 绝对第一步
 2. GC_L0()                                         # 清理上会话 L0 残留
 3. heartbeat_check()                               # 检查未完成任务
+   → 自动: SessionStart hook 执行 python3 /root/.claude/scripts/startup_hook.py
 4. load("system-tree/ROOT.md")                     # 加载系统配置索引
 5. load_current_project_path()                     # 确定当前工作树
 6. report: "森林就绪: X棵活跃树, Y个待处理节点"
+   → 手动: python3 /root/.claude/scripts/mf.py status
 ```
 
 ### 上下文窗口保护
@@ -122,6 +130,16 @@ mkdir -p ~/.claude/projects/-root/memory/{system-tree,experiences-tree/{core,pat
 - 若仍超过 → 逐层向上折叠
 - 优先折叠: COMPLETED > DORMANT > LOW priority
 - 绝不折叠: 当前活跃 LEAF, ABSOLUTE priority 节点
+
+### 会话结束退出序列
+
+```
+1. 对每个活跃节点执行心跳: heartbeat(node)
+2. 检查任务完成状态 → 若全部完成则冒泡
+3. GC L0 瞬时记忆 → 压缩到 LEAF 折叠区
+4. 报告: "记忆森林已保存: N个节点更新"
+   → 自动: Stop hook 执行 python3 /root/.claude/scripts/heartbeat_hook.py
+```
 
 ## 核心行为准则（6条，每次会话强制执行）
 
